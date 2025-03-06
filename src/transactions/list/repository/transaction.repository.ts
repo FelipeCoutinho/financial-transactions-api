@@ -68,7 +68,7 @@ export const transactionRepository = {
         .exec();
 
       return transactions;
-    } catch (error) {
+    } catch (error: any) {
       return {
         statusCode: 500,
         body: JSON.stringify({ message: "Failed to retrieve user balance.", error: error.message }),
