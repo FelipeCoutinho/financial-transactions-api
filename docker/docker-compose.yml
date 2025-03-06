@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    ports:
+      - "4566:4566"  # Porta principal do LocalStack
+    environment:
+      - SERVICES=lambda,dynamodb,apigateway,iam  
+      - LAMBDA_REMOTE_DOCKER=0
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - DEFAULT_REGION=us-east-1
+      - LAMBDA_RUNTIME_IMAGE_MAPPING={"nodejs16.x":"public.ecr.aws/lambda/nodejs:16"}
+      - DEBUG=1  # Habilita logs detalhados para debug
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"

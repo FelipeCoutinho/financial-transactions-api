@@ -1,0 +1,50 @@
+service: financial-transactions-api
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+
+plugins:
+  - serverless-offline
+
+functions:
+  transactionsGetOne:
+    handler:  src/transactions/list/controller.getTransactionByUserId
+    events:
+      - http:
+          path: /v1/transactions/user/{userId}
+          method: get
+          timeout: 900
+          memorySize: 256
+  transactionsGet:
+    handler:  src/transactions/list/controller.listTransactions
+    events:
+      - http:
+          path: /v1/transactions
+          method: get
+          timeout: 900
+          memorySize: 256
+          request:
+            parameters:
+              querystrings:
+                limit: false
+                startKey: false
+  getUserBalanceByMonth:
+    handler: src/transactions/list/controller.getUserBalanceByMonth
+    events:
+      - http:
+          path: /v1/user/balance
+          method: get
+          request:
+            parameters:
+              querystrings:
+                userId: true
+                month: true
+  transactionsPost:
+    handler: src/transactions/create/controller.handler
+    events:
+      - http:
+          path: /v1/transactions
+          method: post
+          timeout: 900
+          memorySize: 256
