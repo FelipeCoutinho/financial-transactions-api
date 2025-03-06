@@ -66,10 +66,7 @@ export class TransactionService {
         throw new Error("Invalid month format. Use YYYY-MM.");
       }
 
-      // Busca todas as transações do usuário no mês especificado
       const transactions = await transactionRepository.findByUserIdAndMonth(userId, month);
-
-      // Soma todos os valores (amount) das transações
       const balance = transactions.reduce((acc, transaction) => acc + transaction.amount, 0);
 
       return balance;
@@ -77,7 +74,7 @@ export class TransactionService {
       console.error("🚨 Error calculating balance:", error);
       throw new Error("Failed to calculate user balance.");
     }
-  }
+  };
 
 }
 

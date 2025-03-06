@@ -1,5 +1,6 @@
 import { TransactionModel } from "../../../database/models/transaction.model";
 import "../../../database/init.dynamodb";
+import dayjs from "dayjs";
 
 export const transactionRepository = {
   findById: async (userId: string) => {
@@ -49,27 +50,29 @@ export const transactionRepository = {
   },
 
   findByUserIdAndMonth: async (userId: string, month: string) => {
+
     try {
-      // Define o primeiro dia do mês
-      const startDate = new Date(`${month}-01T00:00:00.000Z`);
+      const startDate = dayjs(`${month}-01`).startOf("month"); // Primeiro dia do mês
+      const endDate = dayjs(`${month}-01`).endOf("month"); // Último dia do mês
 
-      // Calcula o último dia do mês corretamente
-      const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
-      endDate.setUTCHours(23, 59, 59, 999); // Define para o final do último dia do mês
+      const startDateFormatted = startDate.format("YYYY-MM-DD");
+      const endDateFormatted = endDate.format("YYYY-MM-DD");
 
-      console.log(`🔹 Searching transactions between: ${startDate.toISOString()} and ${endDate.toISOString()}`);
+      console.log(`🔹 Searching transactions between: ${startDateFormatted} and ${endDateFormatted}`);
 
       // Busca as transações dentro do intervalo de datas
       const transactions = await TransactionModel.query("userId")
         .eq(userId)
         .where("createdAt")
-        .between(startDate.toISOString(), endDate.toISOString())
+        .between(startDateFormatted, endDateFormatted)
         .exec();
 
       return transactions;
     } catch (error) {
-      console.error("Error fetching transactions by user and month:", error);
-      throw new Error("Failed to fetch transactions.");
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ message: "Failed to retrieve user balance.", error: error.message }),
+      };
     }
   }
 };
